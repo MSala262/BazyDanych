@@ -51,26 +51,25 @@ INSERT INTO rozliczenia.godziny (id_godziny, data, liczba_godzin , id_pracownika
 ('F879', '2022-01-09', 8, 'A23'), ('G402', '2022-07-09', 6, 'B03'), ('G477', '2022-08-30', 4, 'H62'),
 ('E887', '2021-05-16', 6, 'A10'), ('G850', '2022-10-22', 8, 'P14'), ('A784', '2019-02-17', 5, 'H57');
 
-INSERT INTO rozliczenia.pensje (id_pensji, stanowisko, kwota, id_premii) VALUES (11, 'Asystent', 3700.00, NULL), 
-(30, 'Dyrektor', 10000.00, NULL), (42, 'Analityk', 7000.00, 'J1'), (123, 'Specjalista', 4800.00, 'A7'),
-(155, 'Asystent', 3750.00, 'A7'), (268, 'Sekretarz', 5900.00, 'B3'), (312, 'Specjalista', 5000.00, 'B9'),
-(335, 'Analityk', 6400.00, NULL), (397, 'Dyrektor', 3700.00, NULL), (426, 'Menad¿er', 8500.00, 'J1');
-
 INSERT INTO rozliczenia.premie (id_premii, rodzaj, kwota) VALUES ('A7', 'Œwi¹teczna', 700.00),
 ('B3', 'Uznaniowa', 1000.00), ('B9', 'Za frekwencjê', 500.00), ('C4', NULL, 100.00),
 ('F0', 'Regulaminowa', 300.00), ('J1', 'Kwartalna', 1500.00 ), ('K3', 'Regulaminowa', 800.00),
 ('M7', 'Motywacyjna', 750.00), ('R5', 'Roczna', 3000.00), ('W8', NULL, 150.00);
 
+INSERT INTO rozliczenia.pensje (id_pensji, stanowisko, kwota, id_premii) VALUES (11, 'Asystent', 3700.00, NULL), 
+(30, 'Dyrektor', 10000.00, NULL), (42, 'Analityk', 7000.00, 'J1'), (123, 'Specjalista', 4800.00, 'A7'),
+(155, 'Asystent', 3750.00, 'A7'), (268, 'Sekretarz', 5900.00, 'B3'), (312, 'Specjalista', 5000.00, 'B9'),
+(335, 'Analityk', 6400.00, NULL), (397, 'Dyrektor', 3700.00, NULL), (426, 'Menad¿er', 8500.00, 'J1');
+
 
 SELECT nazwisko, adres FROM rozliczenia.pracownicy;
 
 
-SELECT id_godziny, data, liczba_godzin , id_pracownika,	DATEPART(dw, data) AS dzien_tygodnia, DATEPART(mm, data) FROM rozliczenia.godziny;
+SELECT id_godziny, data, liczba_godzin , id_pracownika,	DATEPART(dw, data) AS dzien_tygodnia, DATEPART(mm, data) AS miesiac FROM rozliczenia.godziny;
 
 
 EXECUTE sp_rename 'rozliczenia.pensje.kwota', 'kwota_brutto', 'COLUMN';
 
---ALTER TABLE rozliczenia.pensje RENAME COLUMN kwota TO kwota_brutto;
 
 ALTER TABLE rozliczenia.pensje ADD kwota_netto DECIMAL(10,2);
 
@@ -78,7 +77,7 @@ UPDATE rozliczenia.pensje
 SET kwota_netto = ROUND((kwota_brutto/1.23), 2);
 
 
-SELECT kwota_netto, kwota_brutto from rozliczenia.pensje;
+SELECT * from rozliczenia.pensje;
 
 
 COMMIT;
