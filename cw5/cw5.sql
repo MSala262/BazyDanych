@@ -31,8 +31,8 @@ i nie moze byc ono puste */
 	id_pracownika CHAR(3) NOT NULL, -- to pole musi skladac sie z trzech znakow i nie moze byc ono puste
 	FOREIGN KEY (id_pracownika) -- klucz obcy w tabeli
 		REFERENCES ksiegowosc.pracownicy (id_pracownika) -- relacja tej tabeli z tabela pracownicy
-		ON DELETE CASCADE -- mechanizm s³u¿¹cy do automatycznego usuwania powi¹zanych rekordów z tabeli nadrzêdnej
-		ON UPDATE CASCADE -- mechanizm s³u¿¹cy do automatycznego aktualizowania powi¹zanych rekordów z tabeli nadrzêdnej
+		/* ON DELETE CASCADE -- mechanizm s³u¿¹cy do automatycznego usuwania powi¹zanych rekordów z tabeli nadrzêdnej
+		ON UPDATE CASCADE -- mechanizm s³u¿¹cy do automatycznego aktualizowania powi¹zanych rekordów z tabeli nadrzêdnej */
 );
 
 -- utworzenie tabeli pensja
@@ -67,16 +67,16 @@ CREATE TABLE ksiegowosc.wynagrodzenie (
 		-- ON UPDATE CASCADE */,
 	FOREIGN KEY (id_godziny)
 		REFERENCES ksiegowosc.godziny (id_godziny)
-		ON DELETE CASCADE
-		ON UPDATE CASCADE,
+		/* ON DELETE CASCADE
+		ON UPDATE CASCADE */,
 	FOREIGN KEY (id_pensji)
 		REFERENCES ksiegowosc.pensja (id_pensji)
-		ON DELETE CASCADE
-		ON UPDATE CASCADE,
+		/* ON DELETE CASCADE
+		ON UPDATE CASCADE */,
 	FOREIGN KEY (id_premii)
 		REFERENCES ksiegowosc.premia (id_premii)
-		ON DELETE CASCADE
-		ON UPDATE CASCADE
+		/* ON DELETE CASCADE
+		ON UPDATE CASCADE */
 );
 
 /* ZAD 5
@@ -170,7 +170,7 @@ SELECT * FROM ksiegowosc.pracownicy WHERE nazwisko LIKE '%n%' AND imie LIKE '%a'
 SELECT * FROM ksiegowosc.pracownicy WHERE nazwisko LIKE '%l%' AND imie LIKE '%a'; -- przyklad w ktorym warunki sa spelnione dla mojej bazy danych
 
 -- f, rekordy z imieniem, nazwiskiem i liczba_godzin, ktorych wartosci z kolumny liczba_godzin pomnozone przez 20 przekroczyla liczbe 160 w miesiacu (nadgodziny)
-SELECT pra.imie, pra.nazwisko, god.liczba_godzin FROM ksiegowosc.godziny god -- 'god' - alias tablicy godziny
+SELECT pra.imie, pra.nazwisko, god.liczba_godzin*20-160 AS liczba_nadgodzin FROM ksiegowosc.godziny god -- 'god' - alias tablicy godziny
 JOIN ksiegowosc.pracownicy pra -- zlaczenie zewnetrzne z druga tabela, 'pra' - alias tabeli pracownicy
 ON god.id_pracownika = pra.id_pracownika -- warunek zlaczenia
 WHERE god.liczba_godzin*20 > 160; -- warunek wyboru rekordow
@@ -211,7 +211,7 @@ ORDER BY pen.kwota ASC; -- sortowanie rosnaco wzgledem kwoty z tabeli pensja (do
 -- ORDER BY pen.kwota DESC; -- sortowanie malejaco wzgledem kwoty z tabeli pensja
 
 -- j
-SELECT pra.imie, pra.nazwisko, pen.kwota AS pensja, pre.kwota AS premia FROM ksiegowosc.wynagrodzenie wyn -- 'wyn' - alias tabeli
+SELECT pra.imie, pra.nazwisko, pen.kwota AS kwota_pensji, pre.kwota AS kwota_premii FROM ksiegowosc.wynagrodzenie wyn -- 'wyn' - alias tabeli
 JOIN ksiegowosc.pracownicy pra -- zlaczenie zewnetrzne z druga tabela, 'pra' - alias tabeli
 ON wyn.id_pracownika = pra.id_pracownika -- warunek zlaczenia
 JOIN ksiegowosc.pensja pen -- zlaczenia zewnetrzne z trzecia tabela, 'pen' - alias tabeli
