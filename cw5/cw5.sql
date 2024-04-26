@@ -99,16 +99,16 @@ INSERT INTO ksiegowosc.godziny (id_godziny, data, liczba_godzin , id_pracownika)
 ('E887', '2021-05-16', 8, 'A10'), ('G850', '2022-10-22', 10, 'P14'), ('A784', '2019-02-17', 8, 'H57');
 
 -- wypelnienie 10 rekordami tabllicy pensja
-INSERT INTO ksiegowosc.pensja (id_pensji, stanowisko, kwota) VALUES (11, 'Asystent', 2000.00), 
-(30, 'Dyrektor', 10000.00), (42, 'Analityk', 7000.00), (123, 'Specjalista', 4800.00),
-(155, 'Asystent', 1500.00), (268, 'Sekretarz', 5900.00), (312, 'Specjalista', 5000.00),
-(335, 'Analityk', 6400.00), (397, 'Dyrektor', 3700.00), (426, 'Menad¿er', 8500.00);
+INSERT INTO ksiegowosc.pensja (id_pensji, stanowisko, kwota) VALUES (11, 'Asystent', 2000), 
+(30, 'Dyrektor', 10000), (42, 'Analityk', 7000), (123, 'Specjalista', 4800),
+(155, 'Asystent', 1500), (268, 'Sekretarz', 5900), (312, 'Specjalista', 5000),
+(335, 'Analityk', 6400), (397, 'Dyrektor', 3700), (426, 'Menad¿er', 8500);
 
 -- wypelnienie 10 rekordami tabllicy premia
-INSERT INTO ksiegowosc.premia (id_premii, rodzaj, kwota) VALUES ('A7', 'Œwi¹teczna', 700.00),
-('B3', 'Uznaniowa', 1000.00), ('B9', 'Za frekwencjê', 500.00), ('C4', NULL, 100.00),
-('F0', 'Regulaminowa', 300.00), ('J1', 'Kwartalna', 1500.00 ), ('K3', 'Regulaminowa', 800.00),
-('M7', 'Motywacyjna', 750.00), ('R5', 'Roczna', 3000.00), ('W8', NULL, 150.00);
+INSERT INTO ksiegowosc.premia (id_premii, rodzaj, kwota) VALUES ('A7', 'Œwi¹teczna', 700),
+('B3', 'Uznaniowa', 1000), ('B9', 'Za frekwencjê', 500), ('C4', NULL, 100),
+('F0', 'Regulaminowa', 300), ('J1', 'Kwartalna', 1500 ), ('K3', 'Regulaminowa', 800),
+('M7', 'Motywacyjna', 750), ('R5', 'Roczna', 3000), ('W8', NULL, 150);
 
 -- wypelnienie 10 rekordami tabllicy wynagrodzenie
 INSERT INTO ksiegowosc.wynagrodzenie (id_wynagrodzenia, data, id_pracownika, id_godziny, id_pensji, id_premii) VALUES 
@@ -222,3 +222,68 @@ ORDER BY pen.kwota DESC, pre.kwota DESC; /* sortowanie malejace rekordow najpier
 a nastepnie rowniez sortowanie malejace rekordow (przed chwila posortowanych) wzgledem kolumny kwota z tabeli premii */
 -- ORDER BY pre.kwota DESC, pen.kwota DESC; -- sortowanie malejace rekordow najpierw wzgledem kolumny kwoty z tabeli premia, 
  -- a nastepnie rowniez sortowanie malejace rekordow (przed chwila posortowanych) wzgledem kolumny kwota z tabeli pensja */
+
+
+
+-- k
+SELECT pen.stanowisko, COUNT(pra.id_pracownika) AS liczba_pracownikow_na_stanowisku FROM ksiegowosc.wynagrodzenie wyn
+JOIN ksiegowosc.pracownicy pra
+ON wyn.id_pracownika=pra.id_pracownika
+JOIN ksiegowosc.pensja pen
+ON wyn.id_pensji=pen.id_pensji
+GROUP BY pen.stanowisko;
+
+-- l
+SELECT stanowisko, AVG(kwota) AS srednia_placa, MIN(kwota) AS minimalna_placa, MAX(kwota) AS maksymalna_placa FROM ksiegowosc.pensja
+GROUP BY stanowisko HAVING stanowisko='Analityk';
+
+SELECT stanowisko, AVG(kwota) AS srednia_placa, MIN(kwota) AS minimalna_placa, MAX(kwota) AS maksymalna_placa FROM ksiegowosc.pensja
+WHERE stanowisko='Analityk' GROUP BY stanowisko;
+
+-- m
+SELECT SUM(pen.kwota) AS laczna_kwota_pensji, SUM(pre.kwota) AS laczna_kwota_premii FROM ksiegowosc.wynagrodzenie wyn
+JOIN ksiegowosc.pensja pen
+ON wyn.id_pensji=pen.id_pensji
+JOIN ksiegowosc.premia pre
+ON wyn.id_premii=pre.id_premii;
+
+SELECT SUM(pen.kwota)+SUM(pre.kwota) AS laczna_kwota_wynagrodzen FROM ksiegowosc.wynagrodzenie wyn
+JOIN ksiegowosc.pensja pen
+ON wyn.id_pensji=pen.id_pensji
+JOIN ksiegowosc.premia pre
+ON wyn.id_premii=pre.id_premii;
+
+-- n
+SELECT pen.stanowisko, SUM(pen.kwota) AS laczna_kwota_pensji, COALESCE(SUM(pre.kwota),0) AS laczna_kwota_premii FROM ksiegowosc.wynagrodzenie wyn
+JOIN ksiegowosc.pensja pen
+ON wyn.id_pensji=pen.id_pensji
+LEFT JOIN ksiegowosc.premia pre
+ON wyn.id_premii=pre.id_premii
+GROUP BY pen.stanowisko;
+
+SELECT pen.stanowisko, SUM(pen.kwota)+COALESCE(SUM(pre.kwota),0) AS laczna_kwota_wynagrodzen FROM ksiegowosc.wynagrodzenie wyn
+JOIN ksiegowosc.pensja pen
+ON wyn.id_pensji=pen.id_pensji
+LEFT JOIN ksiegowosc.premia pre
+ON wyn.id_premii=pre.id_premii
+GROUP BY pen.stanowisko;
+
+
+
+-- o
+SELECT pen.stanowisko, COALESCE(COUNT(pre.kwota),0) AS liczba_przyznanych_premii FROM ksiegowosc.wynagrodzenie wyn
+JOIN ksiegowosc.pensja pen
+ON wyn.id_pensji=pen.id_pensji
+LEFT JOIN ksiegowosc.premia pre
+ON wyn.id_premii=pre.id_premii
+GROUP BY pen.stanowisko;
+
+-- p
+DELETE FROM ksiegowosc.pracownicy
+WHERE id_pracownika IN (
+    SELECT pra.id_pracownika
+    FROM ksiegowosc.pracownicy pra
+    LEFT JOIN ksiegowosc.wynagrodzenie wyn ON pra.id_pracownika = wyn.id_pracownika
+    LEFT JOIN ksiegowosc.pensja pen ON wyn.id_pensji = pen.id_pensji
+    WHERE pen.kwota < 1200
+);
