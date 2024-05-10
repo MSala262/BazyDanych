@@ -52,21 +52,25 @@ EXEC ShowFibonacci 8; -- wykonanie procedury
 SELECT * FROM Person.Person;
 
 -- ZAD 2 -------------------------------------------------------------
+INSERT INTO Person.BusinessEntity (rowguid, ModifiedDate) VALUES (NEWID(), GETDATE()); -- tworzenie nowego rekordu w tablicy nadrzednej
 
 GO 
 CREATE OR ALTER TRIGGER uppercaseLastName ON Person.Person
 AFTER INSERT
 AS
 BEGIN
-	UPDATE Person.Person
-	SET LastName = UPPER(LastName) FROM Person.Person;
+	UPDATE per
+	SET per.LastName = UPPER(ins.LastName) FROM Person.Person per
+	INNER JOIN inserted ins ON per.BusinessEntityID = ins.BusinessEntityID;
 END;
 GO
 
 INSERT INTO Person.Person (BusinessEntityID, PersonType, FirstName, MiddleName, LastName)
-VALUES (292, 'VC', 'John', 'Tim', 'Smith');
+VALUES (20778, 'VC', 'John', 'Tim', 'Smith');
 
-SELECT * FROM Person.Person;
+
+SELECT BusinessEntityID, LastName FROM Person.Person
+ORDER BY BusinessEntityID DESC;
 
 
 -- ZAD 3 -------------------------------------------------------------
