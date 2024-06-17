@@ -67,7 +67,23 @@ SELECT nazwisko, adres FROM rozliczenia.pracownicy;
 
 SELECT id_godziny, data, liczba_godzin , id_pracownika,	DATEPART(dw, data) AS dzien_tygodnia, DATEPART(mm, data) AS miesiac FROM rozliczenia.godziny;
 
+--1sposob
+ALTER TABLE rozliczenia.pensje ADD kwota_brutto DECIMAL(10,2);
 
+--ALTER TABLE rozliczenia.pensje DROP COLUMN kwota_brutto;
+
+UPDATE rozliczenia.pensje SET kwota_brutto = kwota;
+
+ALTER TABLE rozliczenia.pensje ADD kwota_netto DECIMAL(10,2);
+
+UPDATE rozliczenia.pensje
+SET kwota_netto = ROUND((kwota_brutto/1.23), 2);
+
+
+SELECT * from rozliczenia.pensje;
+
+
+--2sposob
 EXECUTE sp_rename 'rozliczenia.pensje.kwota', 'kwota_brutto', 'COLUMN';
 
 
